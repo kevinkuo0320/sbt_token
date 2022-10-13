@@ -23,6 +23,12 @@ function Form() {
   const [clickBalance, setClickBalance] = useState(true); 
   const [lockStatus, setLockStatus] = useState(true); 
   const [mintId, setMintId] = useState(-1); 
+  const [minting, setMinting] = useState(false); 
+  const [minted, setMinted] = useState(false); 
+
+  const[transfered, setTransfered] = useState(false); 
+  const[transfering, setTransfering] = useState(false); 
+  const[transferError, setTransferError] = useState(false); 
 
   const[traitAccId, setTraitAccId] = useState(-1); 
   const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -104,7 +110,11 @@ function Form() {
     const contract = new ethers.Contract(contractAddress, ABI, signer);
     try{
       const res = await contract.mint(mintTo, mintId);
+      setMinted(false); 
+      setMinting(true); 
       await res.wait(); 
+      setMinting(false); 
+      setMinted(true); 
     } catch (err) {
       console.log(err); 
     }
@@ -116,7 +126,21 @@ function Form() {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, ABI, signer);
       const ownerAddrerss = signer.getAddress();
-      await contract.safeTransferFrom(ownerAddrerss ,addressTo, id, 1,"");;
+      try {
+        const res = await contract.safeTransferFrom(ownerAddrerss, addressTo, id, 1, 0x0);
+        setTransfered(false); 
+        setTransfering(true); 
+        await res.wait(); 
+        setTransfering(false); 
+        setTransfered(true); 
+      } catch(err) {
+        // console.log(err); 
+        // const code = err.data.replace('Reverted ','');
+        // console.log({err});
+        // let reason = ethers.utils.toUtf8String('0x' + code.substr(138));
+        // console.log('revert reason:', reason);
+        setTransferError(true); 
+      }
     };
 
   //lock token 
@@ -203,7 +227,8 @@ function Form() {
           </p>
           <button onClick={mint}>mint</button>
         </p>
-
+        <>{minting ? <p>minting...</p> : <></>} </>
+        <>{minted ? <p>minting successful</p> : <></>} </>
 
           <Divider style={{background:"white"}} />
 
@@ -226,7 +251,7 @@ function Form() {
         {
           clickBalance ? <></> : 
           <p>
-          {SBTBalance > 0 ? <p>the address owns the token</p> : <p>s wehowBalance the address doesnt own the token</p>}  
+          {SBTBalance > 0 ? <p>the address owns the token</p> : <p> the address doesnt own the token</p>}  
           </p>
         }
             <button onClick={()=> {viewBalance();setClickBalance();}}>submit</button>
@@ -253,12 +278,16 @@ function Form() {
           </p>
           <button onClick={transfer} >transfer</button>
         </p>
+
+        <>{transfering ? <p>transfering...</p> : <></>} </>
+        <>{transfered ? <p>transfered successful</p> : <></>} </>
+        <>{transferError ? <p>Token is locked!</p> : <></>} </>
         <Divider style={{background:"white"}} />
 
         <p className="sub-text">
           Locked/Unlocked
           <p>
-            <input placeholder="lock id" onChange={e => setId(e.target.value)}/> <button onClick={lockToken}>lock</button>  <button onClick={unlockToken}>unlock</button>
+            <input placeholder="lock id" onChange={e => setId(e.target.value)}/> <button onClick={lockToken}>unlock</button>  <button onClick={unlockToken}>lock</button>
           </p>
 
           <p>
