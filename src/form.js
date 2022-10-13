@@ -3,34 +3,43 @@ import { toast } from "react-toastify";
 import { ethers } from "ethers";
 ///import "./form.css";
 import ConnectWallet from "./ConnectWallet";
+import Divider from '@material-ui/core/Divider';
 
 import ABI from "./abi.json";
 
-const contractAddress = "0x5d7bb48482271b6d1a2c629f2a2bccb8fd7dc509";
+const contractAddress = "0x5638BBb2BFb879a367aE63B224631DeEC8ee2693";
 
-function Form(props) {
-  const [value, setValue] = useState(1);
+function Form() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [totalMinted, setTotalMinted] = useState(0);
-  const [minting, setMinting] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [ownerBalance, setOwnerBalance] = useState(0);
-  const [sellOpen, setSellOpen] = useState(false);
   
   const [addressCheck, setAddressCheck] = useState(""); 
   const [id, setId] = useState(0); 
   const [SBTBalance, setSBTBalance] = useState(0); 
   const [addressTo,setAddressTo] =useState("");
+  const [mintTo,setMintTo] =useState("");
+
+  const [clickBalance, setClickBalance] = useState(true); 
+  const [lockStatus, setLockStatus] = useState(true); 
+  const [mintId, setMintId] = useState(-1); 
+
+  const[traitAccId, setTraitAccId] = useState(-1); 
+  const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+  const signer = provider.getSigner();
 
   useEffect(() => {
     checkIfWalletIsConnected();
     if (window.ethereum) {
-      getCount();
-      getOwnerBalance();
       window.ethereum.on("accountsChanged", checkIfWalletIsConnected);
       window.ethereum.on("disconnect", checkIfWalletIsConnected);
     }
+    signer.getAddress().then((address) => {
+      getTest(address); 
+    }); 
   }, []);
+
+
 
   const connectWallet = async () => {
     const { ethereum } = window;
@@ -63,6 +72,7 @@ function Form(props) {
       setIsOpen(false);
       const account = accounts[0];
       setCurrentAccount(account);
+      getTest(); 
     } else {
       setCurrentAccount("");
       toast("No authorized account found");
@@ -87,15 +97,26 @@ function Form(props) {
     setSBTBalance(count);
   };
 
+  //mint SBT Token
+  const mint = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, ABI, signer);
+    try{
+      const res = await contract.mint(mintTo, mintId);
+      await res.wait(); 
+    } catch (err) {
+      console.log(err); 
+    }
+  };
+
     //transfer SBT Token
     const transfer = async () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, ABI, signer);
       const ownerAddrerss = signer.getAddress();
-      await contract.safeTransferFrom(ownerAddrerss ,addressTo, id, 1,"");
-      //console.log(count);
-      //setSBTBalance(count);
+      await contract.safeTransferFrom(ownerAddrerss ,addressTo, id, 1,"");;
     };
 
   //lock token 
@@ -114,50 +135,15 @@ function Form(props) {
     await connectedContract.lock(id);
   };
 
-  
-
-  //get supply
-  const getCount = async () => {
+  const getTest = async (address) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(contractAddress, ABI, provider);
-    const count = await contract.totalSupply();
-    const convert = count.toNumber();
-    console.log(convert);
-    //setTotalMinted(convert);
-  };
+    const a = await contract.viewCert(address);
+    const convertId = a.toNumber(); 
+    setTraitAccId(convertId); 
+    console.log(convertId); 
+  }
 
-  //get balance
-  const getOwnerBalance = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(contractAddress, ABI, provider);
-    const ownerBalance = await contract.balanceOf(
-      "0xEaE204Fe72C0F4394C4590283DCC0a3E89A69388"
-    );
-    const convertBalance = ownerBalance.toNumber();
-    console.log(convertBalance);
-    setOwnerBalance(convertBalance);
-  };
-
-  //mint NFT
-  const mintToken = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const connectedContract = new ethers.Contract(contractAddress, ABI, signer);
-    const cost = await connectedContract.ticketPrice();
-    try {
-      const result = await connectedContract.safeMint(currentAccount, {
-        value: cost.mul(value),
-      });
-      setMinting(true);
-      await result.wait();
-      setMinting(false);
-      toast.success("Mint Successful.", { position: "bottom-right" });
-      getCount();
-    } catch (err) {
-      console.log(err);
-      toast.error("Mint unsuccessful", { position: "bottom-right" });
-    }
-  };
 
   function openModal() {
     setIsOpen(true);
@@ -169,8 +155,6 @@ function Form(props) {
 
   return (
     <div>
-      <label className="heading">SBT Token Page</label>
-
       <ConnectWallet
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
@@ -182,11 +166,52 @@ function Form(props) {
           marginBottom: "20px",
         }}
       >
+
+        <p className="sub-text">
+          User info : {currentAccount}
+          </p>
+          SBT Token contract address: {contractAddress}
+          <p>
+
+          <p>
+            Token Trait: {traitAccId == -1 ? <p> loading...</p> : 
+            traitAccId == 0 ? 
+            <>id: {traitAccId} => NUS</> : 
+            traitAccId == 1 ? 
+            <>NTU</> :
+            <>SMU</>} 
+            
+          </p>
+           
+          <Divider style={{background:"white"}} />
+
+          <p className="sub-text">
+          Mint SBT token
+          <p>
+            <input placeholder="mint to" 
+            onChange={e => setMintTo(e.target.value)}
+            style={{
+          width: "200px",
+        }}/> 
+          </p>
+          <p>
+            <input placeholder="mint token id" 
+            onChange={e => setMintId(e.target.value)}
+            style={{
+          width: "200px",
+        }}/> 
+          </p>
+          <button onClick={mint}>mint</button>
+        </p>
+
+
+          <Divider style={{background:"white"}} />
+
+           </p>
         <p className="sub-text">
           check SBT token of the input address
           <p>
             <input placeholder="input address" 
-            //value = {value}
             onChange={e => setAddressCheck(e.target.value)}
             style={{
           width: "200px",
@@ -194,14 +219,21 @@ function Form(props) {
           </p>
           <p>
             <input placeholder="id" 
-            //value = {value}
             onChange={e => setId(e.target.value)}
             style={{
           width: "200px",
-        }}/> <button onClick={viewBalance}>submit</button>
+        }}/> 
+        {
+          clickBalance ? <></> : 
+          <p>
+          {SBTBalance > 0 ? <p>the address owns the token</p> : <p>s wehowBalance the address doesnt own the token</p>}  
           </p>
-          {SBTBalance > 0 ? <p>the address owns the token</p> : <p>the address doesnt own the token</p>}  
+        }
+            <button onClick={()=> {viewBalance();setClickBalance();}}>submit</button>
+             </p>
         </p>
+
+        <Divider style={{background:"white"}} />
 
         <p className="sub-text">
           transfer SBT token
@@ -217,119 +249,38 @@ function Form(props) {
             onChange={e => setId(e.target.value)}
             style={{
           width: "200px",
-        }}/> <button>submit</button>
+        }}/>
           </p>
+          <button onClick={transfer} >transfer</button>
         </p>
+        <Divider style={{background:"white"}} />
 
         <p className="sub-text">
           Locked/Unlocked
           <p>
             <input placeholder="lock id" onChange={e => setId(e.target.value)}/> <button onClick={lockToken}>lock</button>  <button onClick={unlockToken}>unlock</button>
           </p>
+
           <p>
-            <input placeholder="view lock status"/> <button type="submit" onClick={viewLock}>view lock status</button>
-            <p> {totalMinted == false ? <p>false</p> : <p>true</p>} </p>
+            <input placeholder="view lock status"/> <button type="submit" onClick={()=>{viewLock();setLockStatus();}}>view lock status</button>
+            {
+              lockStatus ? <></> :
+              <p> {totalMinted == false ? <p>false</p> : <p>true</p>} </p>
+            }
           </p>
         </p>
 
-        {/* <p className="sub-text">
-          您已購買 <span className="focus">{ownerBalance} 張</span>
-        </p>*/}
+        <Divider style={{background:"white"}} />
+
+       
       </div>
-      {/* <p className="sub-text">請選擇購票數量</p> */}
-
-      {/* <input className="email" type="text" placeholder="請輸入數量" />*/}
-      {/* <div
-        className="counter"
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItem: "center",
-          fontSize: "30px",
-        }}
-      >
-        <div className="row">
-          <span
-            onClick={() => handleCountDecre()}
-            className="c-btn btn-1"
-            style={{
-              marginRight: "20px",
-              cursor: "pointer",
-              borderRadius: "8px",
-              background: "#ffe169",
-              height: "50px",
-              width: "50px",
-            }}
-          >
-            <p
-              style={{
-                textAlign: "center",
-              }}
-            >
-              -
-            </p>
-          </span>
-          <div className="count">{value}</div>
-          <span
-            onClick={() => handleCountIncre()}
-            className="c-btn btn-2"
-            style={{
-              marginLeft: "20px",
-              cursor: "pointer",
-              borderRadius: "8px",
-              background: "#ffe169",
-              height: "50px",
-              width: "50px",
-            }}
-          >
-            <p
-              style={{
-                textAlign: "center",
-              }}
-            >
-              +
-            </p>
-          </span>
-        </div>
-      </div> */}
-
-      {/*  <input id="agree" type="checkbox" />
-      <label className="check" htmlFor="agree">
-        我已閱讀相關條例
-      </label>*/}
-
-      {sellOpen ? (
-        <button className="submit" type="submit">
-          尚未開放購買
-        </button>
-      ) : currentAccount ? (
-        <button className="submit" type="submit" onClick={mintToken}>
-          
-        </button>
-      ) : (
         <button
           className="submit"
           onClick={openModal}
           disabled={currentAccount}
         >
-          <div>{currentAccount ? "Connected" : "Connect to metamask wallet"}</div>
+          <div>{currentAccount ? "Wallet Connected" : "Connect to metamask wallet"}</div>
         </button>
-      )}
-
-      {/*  {currentAccount ? (
-        <button className="submit" type="submit" onClick={mintToken}>
-          購買
-        </button>
-      ) : (
-        <button
-          className="submit"
-          onClick={openModal}
-          disabled={currentAccount}
-        >
-          <div>{currentAccount ? "Connected" : "連接錢包"}</div>
-        </button>
-      )}*/}
     </div>
   );
 }
