@@ -209,24 +209,7 @@ function User() {
            
           <Divider style={{background:"white"}} />
 
-          <p className="sub-text">
-          Mint SBT token
-          <p>
-            <input placeholder="mint to" 
-            onChange={e => setMintTo(e.target.value)}
-            style={{
-          width: "200px",
-        }}/> 
-          </p>
-          <p>
-            <input placeholder="mint token id" 
-            onChange={e => setMintId(e.target.value)}
-            style={{
-          width: "200px",
-        }}/> 
-          </p>
-          <button onClick={mint}>mint</button>
-        </p>
+        
         <>{minting ? <p>minting...</p> : <></>} </>
         <>{minted ? <p>minting successful</p> : <></>} </>
 
@@ -283,24 +266,6 @@ function User() {
         <>{transfered ? <p>transfered successful</p> : <></>} </>
         <>{transferError ? <p>Token is locked!</p> : <></>} </>
         <Divider style={{background:"white"}} />
-
-        <p className="sub-text">
-          Locked/Unlocked
-          <p>
-            <input placeholder="lock id" onChange={e => setId(e.target.value)}/> <button onClick={lockToken}>unlock</button>  <button onClick={unlockToken}>lock</button>
-          </p>
-
-          <p>
-            <input placeholder="view lock status"/> <button type="submit" onClick={()=>{viewLock();setLockStatus();}}>view lock status</button>
-            {
-              lockStatus ? <></> :
-              <p> {totalMinted == false ? <p>false</p> : <p>true</p>} </p>
-            }
-          </p>
-        </p>
-
-        <Divider style={{background:"white"}} />
-
        
       </div>
         <button
@@ -314,4 +279,4 @@ function User() {
   );
 }
 
-export default Form;
+export default User;

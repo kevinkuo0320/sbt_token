@@ -230,55 +230,10 @@ function Form() {
         <>{minting ? <p>minting...</p> : <></>} </>
         <>{minted ? <p>minting successful</p> : <></>} </>
 
-          <Divider style={{background:"white"}} />
+         
 
            </p>
-        <p className="sub-text">
-          check SBT token of the input address
-          <p>
-            <input placeholder="input address" 
-            onChange={e => setAddressCheck(e.target.value)}
-            style={{
-          width: "200px",
-        }}/> 
-          </p>
-          <p>
-            <input placeholder="id" 
-            onChange={e => setId(e.target.value)}
-            style={{
-          width: "200px",
-        }}/> 
-        {
-          clickBalance ? <></> : 
-          <p>
-          {SBTBalance > 0 ? <p>the address owns the token</p> : <p> the address doesnt own the token</p>}  
-          </p>
-        }
-            <button onClick={()=> {viewBalance();setClickBalance();}}>submit</button>
-             </p>
-        </p>
-
-        <Divider style={{background:"white"}} />
-
-        <p className="sub-text">
-          transfer SBT token
-          <p>
-            <input placeholder="transfer to" 
-            onChange={e => setAddressTo(e.target.value)}
-            style={{
-          width: "200px",
-        }}/> 
-          </p>
-          <p>
-            <input placeholder="id" 
-            onChange={e => setId(e.target.value)}
-            style={{
-          width: "200px",
-        }}/>
-          </p>
-          <button onClick={transfer} >transfer</button>
-        </p>
-
+       
         <>{transfering ? <p>transfering...</p> : <></>} </>
         <>{transfered ? <p>transfered successful</p> : <></>} </>
         <>{transferError ? <p>Token is locked!</p> : <></>} </>
