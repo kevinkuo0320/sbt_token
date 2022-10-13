@@ -1,12 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
-import SBT from "./form.js"; 
+import SBT from "./admin.js"; 
+import ButtonAppBar from "./bar.js"; 
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>SBT Testing</h1>
+        <ButtonAppBar/>
+        
        <SBT />
       </header>
     </div>
