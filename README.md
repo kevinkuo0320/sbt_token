@@ -2,11 +2,14 @@
 
 This project is to test Soul Bound Token which extends from ERC1155 standards with minting, transferring, locking and unlocking tokens. The admins are allowed to restrict certain tokens from transferring among the users. 
 
+Soulbound Tokens (SBTs) are digital identity tokens that represent the traits, features, and achievements that make up a person or entity. SBTs are issued by “Souls,” which represent blockchain accounts or wallets, and cannot be transferred. 
+
 
 ### `npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
 
 ### 1, Connect to Metamask wallet
 
