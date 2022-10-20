@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
-import metamask from "./metamask.png";
+import metamask from "../asset/metamask.png";
 
 const customStyles = {
   overlay: {

@@ -1,7 +1,6 @@
-import logo from './logo.svg';
-import './App.css';
-import User from "./user.js"; 
-import ButtonAppBar from "./bar.js"; 
+import '../App.css';
+import User from "../component/user.js"; 
+import ButtonAppBar from "../component/bar.js"; 
 
 function UserPage() {
   return (

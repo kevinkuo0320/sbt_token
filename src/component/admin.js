@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import ConnectWallet from "./ConnectWallet";
 import Divider from '@material-ui/core/Divider';
 
-import ABI from "./abi.json";
+import ABI from "../contract/abi.json";
 
 const contractAddress = "0x5638BBb2BFb879a367aE63B224631DeEC8ee2693";
 

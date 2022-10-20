@@ -1,8 +1,7 @@
-import logo from './logo.svg';
 import './App.css';
-import AdminPage from "./AdminPage"; 
-import UserPage from "./UserPage"; 
-import ButtonAppBar from "./bar.js"; 
+import AdminPage from "./pages/AdminPage"; 
+import UserPage from "./pages/UserPage"; 
+import ButtonAppBar from "./component/bar.js"; 
 import ReactDOM from "react-dom";
 import {Routes, Route } from "react-router-dom";
 

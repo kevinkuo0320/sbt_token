@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import Admin from "./admin"; 
-import User from "./user"; 
+import Admin from "./component/admin"; 
+import User from "./component/user"; 
 import { BrowserRouter} from "react-router-dom";
 
 

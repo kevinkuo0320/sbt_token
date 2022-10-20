@@ -1,7 +1,6 @@
-import logo from './logo.svg';
-import './App.css';
-import SBT from "./admin.js"; 
-import ButtonAppBar from "./bar.js"; 
+import '../App.css';
+import SBT from "../component/admin.js"; 
+import ButtonAppBar from "../component/bar.js"; 
 
 function AdminPage() {
   return (
